@@ -10,6 +10,12 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+      - name: Login to Google Cloud Registry
+        uses: docker/login-action@v1
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GCR_JSON_KEY }}
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1 
         with:
@@ -23,6 +29,7 @@ jobs:
           push: true
           # TODO: this could be the branch or the tag if release...
           tags: |
-            ghcr.io/n3wscott/learning-nc-server:latest 
+            ghcr.io/n3wscott/learning-nc-server:latest
+            gcr.io/n3wscott/learning-nc-server:latest
       - name: Image digest
         run: echo Build and Published ${{ steps.docker_build.outputs.digest }}
