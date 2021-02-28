@@ -1,4 +1,4 @@
-FROM node:14
+FROM iron/node
 
 # Create app directory
 WORKDIR /usr/src/app
