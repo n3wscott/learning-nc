@@ -21,6 +21,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: n3wscott/learning-nc-server:latest
+          # TODO: this could be the branch or the tag if release...
+          tags: |
+            ghcr.io/n3wscott/learning-nc-server:latest 
       - name: Image digest
         run: echo Build and Published ${{ steps.docker_build.outputs.digest }}
