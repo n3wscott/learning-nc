@@ -55,17 +55,13 @@ jobs:
 
       - name: Pack Build
         run: |
-          pack build --builder=gcr.io/buildpacks/builder learning-nc
+          pack build --builder=gcr.io/buildpacks/builder $REPOSITORY_NAME
 
       - name: Docker Push
-        env:
-          CONTAINER_IMAGE: gcr.io/${{ secrets.GCR_PROJECT }}/actions/${ env.REPOSITORY_NAME }}:${{ github.sha }}
         run: |
-          docker tag learning-nc $CONTAINER_IMAGE
+          docker tag $REPOSITORY_NAME gcr.io/${{ secrets.GCR_PROJECT }}/actions/${ env.REPOSITORY_NAME }}:${{ github.sha }}
           docker push $CONTAINER_IMAGE
-          
-          echo CONTAINER_IMAGE=$(echo "$CONTAINER_IMAGE") >> $GITHUB_ENV
 
       - name: Image digest
         run: |
-          echo $REPOSITORY_NAME - Built and Published $CONTAINER_IMAGE
+          echo $REPOSITORY_NAME - Built and Published gcr.io/${{ secrets.GCR_PROJECT }}/actions/${ env.REPOSITORY_NAME }}:${{ github.sha }}
