@@ -8,28 +8,34 @@ jobs:
     name: Push Docker image to GitHub Container Registry
     runs-on: ubuntu-latest
     steps:
+      - run: echo ::set-env name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
+
+      - name: Install pack
+        uses: buildpacks/github-actions/setup-pack@v4
+
       - name: Check out the repo
         uses: actions/checkout@v2
+
       - name: Login to Google Cloud Registry
         uses: docker/login-action@v1
         with:
           registry: gcr.io
           username: _json_key
           password: ${{ secrets.GCR_JSON_KEY }}
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1 
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GHCR_TOKEN }}
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          # TODO: this could be the branch or the tag if release...
-          tags: |
-            ghcr.io/n3wscott/learning-nc-server:latest
-            gcr.io/${{ secrets.GCR_PROJECT }}/learning-nc-server:latest
+
+      - name: Pack Build
+        run: |
+          pack build --builder=gcr.io/buildpacks/builder learning-nc
+
+      - name: Docker Push
+        env:
+          CONTAINER_IMAGE: docker tag learning-node gcr.io/${{ secrets.GCR_PROJECT }}/learning-nc:${{ github.sha }}
+        run: |
+          docker tag learning-nc $CONTAINER_IMAGE
+          docker push $CONTAINER_IMAGE
+          
+          echo ::set-env name=CONTAINER_IMAGE::$(echo "$CONTAINER_IMAGE")
+
       - name: Image digest
-        run: echo Build and Published ${{ steps.docker_build.outputs.digest }}
+        run: |
+          echo $REPOSITORY_NAME - Built and Published $CONTAINER_IMAGE
