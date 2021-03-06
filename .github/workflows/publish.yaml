@@ -59,7 +59,7 @@ jobs:
 
       - name: Docker Push
         env:
-          CONTAINER_IMAGE: gcr.io/${{ secrets.GCR_PROJECT }}/learning-nc:${{ github.sha }}
+          CONTAINER_IMAGE: gcr.io/${{ secrets.GCR_PROJECT }}/actions/${ env.REPOSITORY_NAME }}:${{ github.sha }}
         run: |
           docker tag learning-nc $CONTAINER_IMAGE
           docker push $CONTAINER_IMAGE
