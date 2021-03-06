@@ -29,13 +29,13 @@ jobs:
     - run: npm test
 
   container:
+    if: ${{ github.event_name }}" == 'push'     # Blocks from running Containerize unless a push event.
     name: Containerize
     runs-on: ubuntu-latest
     needs: test           # depends on jobs.test to finish.
 
     env:
       PACK_VERSION: 0.17.0
-      PUSH_CONTAINER: "false"
 
     steps:
       - name: Defaults
@@ -47,9 +47,6 @@ jobs:
           REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
           echo REPOSITORY_NAME="$REPOSITORY_NAME" >> $GITHUB_ENV
           echo CONTAINER_IMAGE=$(echo "gcr.io/${{ secrets.GCR_PROJECT }}/actions/${REPOSITORY_NAME}:${{ github.sha }}") >> $GITHUB_ENV
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            echo PUSH_CONTAINER="true" >> $GITHUB_ENV
-          fi
 
       - name:  Install pack CLI
         shell: bash
@@ -80,7 +77,6 @@ jobs:
         run: pack build --builder=gcr.io/buildpacks/builder $REPOSITORY_NAME
 
       - name: Docker Tag and Push
-        if: env.PUSH_CONTAINER != 'true'
         run: |
           docker tag $REPOSITORY_NAME $CONTAINER_IMAGE
           docker push $CONTAINER_IMAGE
