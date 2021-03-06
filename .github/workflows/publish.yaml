@@ -19,11 +19,12 @@ jobs:
     
     steps:
       - name: Defaults
+        shell: bash
         run: |
           if [[ "${{ github.event.inputs.pack-version }}" != "" ]]; then
             echo "PACK_VERSION=${{ github.event.inputs.pack-version }}" >> $GITHUB_ENV
           fi
-          echo ::set-env name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
+          echo REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}') >> $GITHUB_ENV
 
       - name:  Install pack CLI
         shell: bash
@@ -63,7 +64,7 @@ jobs:
           docker tag learning-nc $CONTAINER_IMAGE
           docker push $CONTAINER_IMAGE
           
-          echo ::set-env name=CONTAINER_IMAGE::$(echo "$CONTAINER_IMAGE")
+          echo CONTAINER_IMAGE=$(echo "$CONTAINER_IMAGE") >> $GITHUB_ENV
 
       - name: Image digest
         run: |
