@@ -18,13 +18,12 @@ jobs:
       PACK_VERSION: 0.17.0
     
     steps:
-      - run: echo ::set-env name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
-
       - name: Defaults
         run: |
           if [[ "${{ github.event.inputs.pack-version }}" != "" ]]; then
             echo "PACK_VERSION=${{ github.event.inputs.pack-version }}" >> $GITHUB_ENV
           fi
+          echo ::set-env name=REPOSITORY_NAME::$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
 
       - name:  Install pack CLI
         shell: bash
