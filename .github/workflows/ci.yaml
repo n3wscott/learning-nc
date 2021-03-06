@@ -45,7 +45,7 @@ jobs:
           fi
           REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}')
           echo REPOSITORY_NAME="$REPOSITORY_NAME" >> $GITHUB_ENV
-          echo CONTAINER_IMAGE=$(echo "gcr.io/${{ secrets.GCR_PROJECT }}/actions/${REPOSITORY_NAME}:${{ github.sha }}")
+          echo CONTAINER_IMAGE=$(echo "gcr.io/${{ secrets.GCR_PROJECT }}/actions/${REPOSITORY_NAME}:${{ github.sha }}") >> $GITHUB_ENV
 
       - name:  Install pack CLI
         shell: bash
